@@ -1,21 +1,22 @@
 version: "2"
 
 linters:
-  default: none
-  enable:
-    - logchecklint
+#  default: none
+#  enable:
+  enable: []    # no linters enabled here; repository is a linter itself
+#    - logchecklint
 
-  settings:
-    custom:
-      logchecklint:
-        type: module
-        description: "Linter for checking log messages: lowercase start, English only, no special chars, no sensitive data"
-        original-url: github.com/manakovpavel1997-lab/logchecklint
-        settings:
-          disable_lowercase_check: false
-          disable_english_check: false
-          disable_special_char_check: false
-          disable_sensitive_check: false
-          custom_sensitive_keywords:
-            - "bank_account"
-            - "ssn_number"
+#  settings:
+#    custom:
+#      logchecklint:
+#        type: module
+#        description: "Linter for checking log messages: lowercase start, English only, no special chars, no sensitive data"
+#        original-url: github.com/manakovpavel1997-lab/logchecklint
+#        settings:
+#          disable_lowercase_check: false
+#          disable_english_check: false
+#          disable_special_char_check: false
+#          disable_sensitive_check: false
+#          custom_sensitive_keywords:
+#            - "bank_account"
+#            - "ssn_number"
