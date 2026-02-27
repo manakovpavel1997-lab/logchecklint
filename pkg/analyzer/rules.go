@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-// sensitiveKeywords contains keywords that may indicate sensitive data in log messages.
+// sensitiveKeywords содержит только очевидно чувствительные слова.
 var sensitiveKeywords = []string{
 	"password", "passwd", "pwd",
 	"token", "access_token", "refresh_token",
@@ -13,24 +13,23 @@ var sensitiveKeywords = []string{
 	"secret", "secret_key",
 	"credential", "credentials",
 	"private_key", "privatekey",
-	"auth", "authorization",
 	"ssn", "social_security",
 	"credit_card", "creditcard",
 	"cvv", "pin",
 }
 
-// CheckLowercaseStart checks that the log message starts with a lowercase letter.
-// Returns true if the message violates the rule (starts with uppercase).
+// CheckLowercaseStart проверяет, что сообщение начинается со строчной буквы.
+// true = правило нарушено (первая буква заглавная).
 func CheckLowercaseStart(msg string) bool {
-	if len(msg) == 0 {
+	if msg == "" {
 		return false
 	}
 	r := rune(msg[0])
 	return unicode.IsUpper(r)
 }
 
-// CheckEnglishOnly checks that the log message contains only ASCII/English characters.
-// Returns true if the message violates the rule (contains non-English characters).
+// CheckEnglishOnly проверяет, что в сообщении только ASCII-символы.
+// true = правило нарушено (есть неанглийские символы).
 func CheckEnglishOnly(msg string) bool {
 	for _, r := range msg {
 		if r > unicode.MaxASCII {
@@ -40,25 +39,21 @@ func CheckEnglishOnly(msg string) bool {
 	return false
 }
 
-// specialChars contains characters that should not appear in log messages.
-const specialChars = "!@#$%^&*~`<>{}|\\"  // excluding common punctuation like : , . - _ ( ) / = + '
+// символы, которые нельзя использовать в логах
+const specialChars = "!@#$%^&*~`<>{}|\\"
 
-// CheckSpecialCharsOrEmoji checks that the log message does not contain
-// special characters or emoji.
-// Returns true if the message violates the rule.
+// CheckSpecialCharsOrEmoji проверяет спецсимволы и эмодзи.
+// true = правило нарушено.
 func CheckSpecialCharsOrEmoji(msg string) bool {
 	for _, r := range msg {
-		// Check for emoji ranges
 		if isEmoji(r) {
 			return true
 		}
-		// Check for special characters
 		if strings.ContainsRune(specialChars, r) {
 			return true
 		}
-		// Check for repeated punctuation like !!! or ...
 	}
-	// Check for repeated punctuation patterns
+	// повторяющаяся пунктуация
 	if strings.Contains(msg, "!!") || strings.Contains(msg, "??") ||
 		strings.Contains(msg, "...") {
 		return true
@@ -66,7 +61,7 @@ func CheckSpecialCharsOrEmoji(msg string) bool {
 	return false
 }
 
-// isEmoji checks whether a rune is an emoji character.
+// isEmoji проверяет, является ли руна эмодзи.
 func isEmoji(r rune) bool {
 	return (r >= 0x1F600 && r <= 0x1F64F) || // Emoticons
 		(r >= 0x1F300 && r <= 0x1F5FF) || // Misc Symbols and Pictographs
@@ -93,10 +88,8 @@ func isEmoji(r rune) bool {
 		(r >= 0x1F0CF && r <= 0x1F0CF) // Joker
 }
 
-// CheckSensitiveData checks whether the log message may contain sensitive data.
-// It looks for known sensitive keywords followed by patterns that suggest
-// the actual value is being logged (e.g., concatenation or interpolation).
-// Returns true if the message violates the rule.
+// CheckSensitiveData проверяет наличие чувствительных данных.
+// true = правило нарушено.
 func CheckSensitiveData(msg string) bool {
 	lower := strings.ToLower(msg)
 	for _, keyword := range sensitiveKeywords {
@@ -107,8 +100,7 @@ func CheckSensitiveData(msg string) bool {
 	return false
 }
 
-// CheckSensitiveDataWithCustomKeywords checks for sensitive data using both
-// default and user-provided custom keywords.
+// CheckSensitiveDataWithCustomKeywords добавляет пользовательские ключевые слова.
 func CheckSensitiveDataWithCustomKeywords(msg string, customKeywords []string) bool {
 	if CheckSensitiveData(msg) {
 		return true
